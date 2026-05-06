@@ -442,10 +442,6 @@ function buildDayTabs() {
 
 // ── Build cinema chips ────────────────────────────────────────────────────
 function buildCinemaChips() {
-  if (currentView !== 'cinema') {
-    document.getElementById('cinemaChips').innerHTML = '';
-    return;
-  }
   const cinemas = getMergedCinemas();
   _cinemaIndex = cinemas.map(c => c.name);
 
@@ -499,7 +495,7 @@ function renderByCinema() {
 
 // ── Render: by movie ──────────────────────────────────────────────────────
 function renderByMovie() {
-  const cinemas = getMergedCinemas();
+  const cinemas = getMergedCinemas().filter(c => !selectedCinema || c.name === selectedCinema);
 
   // Aggregate: title → [{ cinema, district, showtimes }]
   const movieMap = new Map();
@@ -588,4 +584,4 @@ loadData();
 </script>
 </body>
 </html>
-                                      
+                                                                                         
