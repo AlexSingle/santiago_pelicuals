@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartelera SUB — Santiago</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0f1117;
+    --surface:  #1a1d27;
+    --card:     #22263a;
+    --border:   #2e3350;
+    --text:     #e2e8f0;
+    --muted:    #7a85a3;
+    --accent:   #6c8aff;
+    --radius:   10px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+    min-width: 140px;
+  }
+  .header h1 span { color: var(--accent); }
+
+  /* View toggle */
+  .view-toggle {
+    display: flex;
+    background: var(--card);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .view-btn {
+    padding: 5px 14px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .view-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* Refresh info */
+  .refresh-info {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .refresh-info a {
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .refresh-info a:hover { text-decoration: underline; }
+
+  /* ── Day tabs ── */
+  .day-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 14px 20px 10px;
+    overflow-x: auto;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .day-tab {
+    padding: 6px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .day-tab:hover { border-color: var(--accent); color: var(--text); }
+  .day-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Cinema chips ── */
+  .cinema-chips-wrap {
+    padding: 10px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip.chip-all.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Main content ── */
+  .content { padding: 16px 20px; }
+
+  /* ── Cinema block (by-cinema view) ── */
+  .cinema-block {
+    margin-bottom: 24px;
+  }
+  .cinema-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .cinema-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cinema-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .cinema-district {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Movie row inside cinema */
+  .movie-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .movie-title {
+    font-weight: 600;
+    font-size: 13px;
+    min-width: 160px;
+    flex: 1;
+    padding-top: 2px;
+  }
+  .showtimes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .pill time { font-weight: 700; }
+
+  /* Format badges */
+  .fmt-badge {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .fmt-imax   { background: #0a4fa8; color: #c8dfff; }
+  .fmt-4dx    { background: #7c1fa8; color: #e8c8ff; }
+  .fmt-atmos  { background: #1a5c3a; color: #a8ffd0; }
+  .fmt-vip    { background: #7a5500; color: #ffd980; }
+  .fmt-dbox   { background: #8b2500; color: #ffb899; }
+  .fmt-xtreme { background: #004a5c; color: #99e8ff; }
+  .fmt-xd     { background: #3a1a6e; color: #d4b8ff; }
+  .fmt-sp     { background: #3d3d00; color: #ffffaa; }
+  .fmt-prime  { background: #00405c; color: #99d8ff; }
+
+  /* ── Movie cards (by-movie view) ── */
+  .movie-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-bottom: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .movie-card-header {
+    padding: 12px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .cinema-sessions-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .cinema-sessions-row:last-child { border-bottom: none; }
+  .cs-cinema {
+    min-width: 150px;
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    padding-top: 4px;
+  }
+  .cs-showtimes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  /* ── Error / empty states ── */
+  .error-banner {
+    background: #3a1515;
+    border: 1px solid #7a3030;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    color: #ffaaaa;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 60px 20px;
+    font-size: 14px;
+  }
+  .loading {
+    text-align: center;
+    color: var(--muted);
+    padding: 60px 20px;
+    font-size: 14px;
+  }
+
+  @media (max-width: 600px) {
+    .header { padding: 10px 12px; }
+    .content { padding: 12px; }
+    .movie-row { padding: 6px 10px; }
+    .cinema-chips-wrap { padding: 8px 12px; }
+    .day-tabs { padding: 10px 12px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Cartelera <span>SUB</span> — Santiago</h1>
+  <div class="view-toggle">
+    <button class="view-btn active" id="btnByCinema" onclick="setView('cinema')">Por cine</button>
+    <button class="view-btn" id="btnByMovie" onclick="setView('movie')">Por película</button>
+  </div>
+  <div class="refresh-info" id="refreshInfo">Cargando…</div>
+</div>
+
+<div class="day-tabs" id="dayTabs"></div>
+<div class="cinema-chips-wrap" id="cinemaChips"></div>
+<div class="content" id="content"><div class="loading">Cargando horarios…</div></div>
+
+<script>
+'use strict';
+
+// ── Config ────────────────────────────────────────────────────────────────
+const SCHEDULE_URL = 'https://storage.yandexcloud.net/cartelera-sub-santiago/schedule.json';
+
+// ── Constants ─────────────────────────────────────────────────────────────
+const BORING = new Set(['2D','3D','SUBT','SUB','ORI','CONV','SUBTITULADO']);
+
+const VIP_PARENT = {
+  'Cinepolis Parque Arauco VIP':   'Cinepolis Parque Arauco',
+  'Cinepolis Mallplaza Egana VIP': 'Cinepolis Mallplaza Egana',
+  'Cinepolis Los Dominicos VIP':   'Cinepolis Mallplaza Los Dominicos',
+};
+
+const DISTRICT_COLORS = {
+  'Las Condes':  '#4a90d9',
+  'Ñuñoa':       '#9b72cf',
+  'Providencia': '#2ea06b',
+  'Vitacura':    '#d4a017',
+  'La Reina':    '#c0392b',
+};
+
+// ── State ─────────────────────────────────────────────────────────────────
+let DATA = null;
+let selectedDay    = null;
+let selectedCinema = null;
+let currentView    = 'cinema';
+let _cinemaIndex   = [];
+
+// ── Format helpers ────────────────────────────────────────────────────────
+function fmtLabel(fmt) {
+  if (!fmt) return '';
+  return fmt.split(/[\s+]+/).filter(t => t && !BORING.has(t.toUpperCase())).join(' ');
+}
+
+function fmtClass(fmt) {
+  if (!fmt) return '';
+  const u = fmt.toUpperCase();
+  if (u.includes('IMAX'))   return 'fmt-imax';
+  if (u.includes('4DX'))    return 'fmt-4dx';
+  if (u.includes('ATMOS'))  return 'fmt-atmos';
+  if (u.includes('VIP'))    return 'fmt-vip';
+  if (u.includes('DBOX'))   return 'fmt-dbox';
+  if (u.includes('XTREME')) return 'fmt-xtreme';
+  if (u.includes('XD'))     return 'fmt-xd';
+  if (/\bSP\b/.test(u))     return 'fmt-sp';
+  if (u.includes('PRIME'))  return 'fmt-prime';
+  return '';
+}
+
+function renderPill(st) {
+  const label = fmtLabel(st.format);
+  const cls   = fmtClass(st.format);
+  const badge = label
+    ? `<span class="fmt-badge ${cls}">${label}</span>`
+    : '';
+  return `<span class="pill"><time>${st.time}</time>${badge}</span>`;
+}
+
+function shortCinemaName(name) {
+  return name
+    .replace(/^Cinepolis\s+/i, '')
+    .replace(/^Cinemark\s+/i, '')
+    .replace(/^Cineplanet\s+/i, '');
+}
+
+// ── Data merge ────────────────────────────────────────────────────────────
+function getMergedCinemas() {
+  const vipNames = new Set(Object.keys(VIP_PARENT));
+
+  // Deep-copy non-VIP cinemas
+  const merged = DATA.cinemas
+    .filter(c => !vipNames.has(c.name))
+    .map(c => ({
+      ...c,
+      days: c.days.map(d => ({
+        ...d,
+        movies: d.movies.map(m => ({ ...m, showtimes: [...m.showtimes] }))
+      }))
+    }));
+
+  const byName = Object.fromEntries(merged.map(c => [c.name, c]));
+
+  // Merge VIP sessions into parent
+  for (const vip of DATA.cinemas.filter(c => vipNames.has(c.name))) {
+    const parent = byName[VIP_PARENT[vip.name]];
+    if (!parent) continue;
+    for (const vDay of vip.days) {
+      let pDay = parent.days.find(d => d.date === vDay.date);
+      if (!pDay) {
+        pDay = { date: vDay.date, label: vDay.label, movies: [] };
+        parent.days.push(pDay);
+        parent.days.sort((a, b) => a.date.localeCompare(b.date));
+      }
+      for (const vMov of vDay.movies) {
+        let pMov = pDay.movies.find(m => m.title === vMov.title);
+        if (!pMov) {
+          pMov = { title: vMov.title, showtimes: [] };
+          pDay.movies.push(pMov);
+        }
+        pMov.showtimes.push(...vMov.showtimes);
+        pMov.showtimes.sort((a, b) => a.time.localeCompare(b.time));
+      }
+    }
+  }
+
+  return merged;
+}
+
+// ── Build day tabs ────────────────────────────────────────────────────────
+function buildDayTabs() {
+  const cinemas = getMergedCinemas();
+  const dates = [...new Set(cinemas.flatMap(c => c.days.map(d => d.date)))].sort();
+  if (!dates.length) return;
+
+  if (!selectedDay || !dates.includes(selectedDay)) selectedDay = dates[0];
+
+  const labelFor = {};
+  cinemas.forEach(c => c.days.forEach(d => { labelFor[d.date] = d.label; }));
+
+  document.getElementById('dayTabs').innerHTML = dates.map(d => `
+    <button class="day-tab${d === selectedDay ? ' active' : ''}"
+            onclick="selectDay('${d}')">${labelFor[d] || d}</button>
+  `).join('');
+}
+
+// ── Build cinema chips ────────────────────────────────────────────────────
+function buildCinemaChips() {
+  if (currentView !== 'cinema') {
+    document.getElementById('cinemaChips').innerHTML = '';
+    return;
+  }
+  const cinemas = getMergedCinemas();
+  _cinemaIndex = cinemas.map(c => c.name);
+
+  const allActive = selectedCinema === null;
+  const chips = cinemas.map((c, i) => {
+    const active = selectedCinema === c.name;
+    const col    = DISTRICT_COLORS[c.district] || '#888';
+    const style  = active
+      ? `border-color:${col};color:${col};background:${col}18;`
+      : '';
+    return `<button class="chip" style="${style}"
+              onclick="selectCinema(_cinemaIndex[${i}])">${shortCinemaName(c.name)}</button>`;
+  }).join('');
+
+  document.getElementById('cinemaChips').innerHTML =
+    `<button class="chip chip-all${allActive ? ' active' : ''}" onclick="selectCinema(null)">Todos</button>` +
+    chips;
+}
+
+// ── Render: by cinema ─────────────────────────────────────────────────────
+function renderByCinema() {
+  const cinemas = getMergedCinemas().filter(c =>
+    !selectedCinema || c.name === selectedCinema
+  );
+
+  let html = '';
+  for (const cinema of cinemas) {
+    const day = cinema.days.find(d => d.date === selectedDay);
+    if (!day || !day.movies.length) continue;
+
+    const col = DISTRICT_COLORS[cinema.district] || '#888';
+    html += `
+      <div class="cinema-block">
+        <div class="cinema-header">
+          <div class="cinema-dot" style="background:${col}"></div>
+          <span class="cinema-name">${shortCinemaName(cinema.name)}</span>
+          <span class="cinema-district">${cinema.district}</span>
+        </div>
+        ${day.movies.map(m => `
+          <div class="movie-row">
+            <div class="movie-title">${m.title}</div>
+            <div class="showtimes">${m.showtimes.map(renderPill).join('')}</div>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  if (!html) html = '<div class="empty-state">No hay funciones subtituladas para este día.</div>';
+  document.getElementById('content').innerHTML = html;
+}
+
+// ── Render: by movie ──────────────────────────────────────────────────────
+function renderByMovie() {
+  const cinemas = getMergedCinemas();
+
+  // Aggregate: title → [{ cinema, district, showtimes }]
+  const movieMap = new Map();
+  for (const cinema of cinemas) {
+    const day = cinema.days.find(d => d.date === selectedDay);
+    if (!day) continue;
+    for (const m of day.movies) {
+      if (!movieMap.has(m.title)) movieMap.set(m.title, []);
+      movieMap.get(m.title).push({
+        cinema:   cinema.name,
+        district: cinema.district,
+        showtimes: m.showtimes,
+      });
+    }
+  }
+
+  const sorted = [...movieMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+  let html = '';
+  for (const [title, sessions] of sorted) {
+    const rows = sessions.map(s => {
+      const col = DISTRICT_COLORS[s.district] || '#888';
+      return `
+        <div class="cinema-sessions-row">
+          <div class="cs-cinema" style="color:${col}">${shortCinemaName(s.cinema)}</div>
+          <div class="cs-showtimes">${s.showtimes.map(renderPill).join('')}</div>
+        </div>`;
+    }).join('');
+
+    html += `
+      <div class="movie-card">
+        <div class="movie-card-header">${title}</div>
+        ${rows}
+      </div>`;
+  }
+
+  if (!html) html = '<div class="empty-state">No hay funciones subtituladas para este día.</div>';
+  document.getElementById('content').innerHTML = html;
+}
+
+// ── Render dispatcher ─────────────────────────────────────────────────────
+function render() {
+  buildDayTabs();
+  buildCinemaChips();
+  if (currentView === 'cinema') renderByCinema();
+  else renderByMovie();
+}
+
+// ── Event handlers ────────────────────────────────────────────────────────
+function selectDay(d) {
+  selectedDay = d;
+  render();
+}
+function selectCinema(name) {
+  selectedCinema = name;
+  render();
+}
+function setView(v) {
+  currentView = v;
+  document.getElementById('btnByCinema').classList.toggle('active', v === 'cinema');
+  document.getElementById('btnByMovie').classList.toggle('active', v === 'movie');
+  render();
+}
+
+// ── Data loading ──────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const url = SCHEDULE_URL.startsWith('http') ? SCHEDULE_URL : SCHEDULE_URL + '?t=' + Date.now();
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    DATA = await r.json();
+
+    const fetchedAt = DATA.fetched_at || '';
+    document.getElementById('refreshInfo').innerHTML =
+      `Actualizado: ${fetchedAt}`;
+
+    render();
+  } catch (e) {
+    document.getElementById('content').innerHTML =
+      `<div class="error-banner">⚠ No se pudo cargar schedule.json: ${e.message}</div>`;
+    document.getElementById('refreshInfo').textContent = 'Error al cargar';
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
