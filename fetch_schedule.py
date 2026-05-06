@@ -75,9 +75,9 @@ def fetch(url, headers, data=None):
 
 def day_label(d_str):
     d = date.fromisoformat(d_str)
-    days   = ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
-    months = ["","enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
-    return f"{days[d.weekday()]} {d.day} de {months[d.month]}"
+    days   = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    months = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    return f"{days[d.weekday()]} {months[d.month]} {d.day}"
 
 def fetch_cinemark(theater_id, start, end):
     data     = fetch(CINEMARK_URL.format(theater_id), CINEMARK_HDRS)
@@ -199,3 +199,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+                                                                     
