@@ -303,8 +303,8 @@
 <div class="header">
   <h1>Cartelera <span>SUB</span> — Santiago</h1>
   <div class="view-toggle">
-    <button class="view-btn active" id="btnByCinema" onclick="setView('cinema')">By cinema</button>
-    <button class="view-btn" id="btnByMovie" onclick="setView('movie')">By movie</button>
+    <button class="view-btn" id="btnByCinema" onclick="setView('cinema')">By cinema</button>
+    <button class="view-btn active" id="btnByMovie" onclick="setView('movie')">By movie</button>
   </div>
   <div class="refresh-info" id="refreshInfo">Loading…</div>
 </div>
@@ -340,7 +340,7 @@ const DISTRICT_COLORS = {
 let DATA = null;
 let selectedDay    = null;
 let selectedCinema = null;
-let currentView    = 'cinema';
+let currentView    = 'movie';
 let _cinemaIndex   = [];
 
 // ── Format helpers ────────────────────────────────────────────────────────
@@ -584,4 +584,4 @@ loadData();
 </script>
 </body>
 </html>
-                                                                                         
+                                                                                          
