@@ -303,15 +303,15 @@
 <div class="header">
   <h1>Cartelera <span>SUB</span> — Santiago</h1>
   <div class="view-toggle">
-    <button class="view-btn active" id="btnByCinema" onclick="setView('cinema')">Por cine</button>
-    <button class="view-btn" id="btnByMovie" onclick="setView('movie')">Por película</button>
+    <button class="view-btn active" id="btnByCinema" onclick="setView('cinema')">By cinema</button>
+    <button class="view-btn" id="btnByMovie" onclick="setView('movie')">By movie</button>
   </div>
-  <div class="refresh-info" id="refreshInfo">Cargando…</div>
+  <div class="refresh-info" id="refreshInfo">Loading…</div>
 </div>
 
 <div class="day-tabs" id="dayTabs"></div>
 <div class="cinema-chips-wrap" id="cinemaChips"></div>
-<div class="content" id="content"><div class="loading">Cargando horarios…</div></div>
+<div class="content" id="content"><div class="loading">Loading schedule…</div></div>
 
 <script>
 'use strict';
@@ -461,7 +461,7 @@ function buildCinemaChips() {
   }).join('');
 
   document.getElementById('cinemaChips').innerHTML =
-    `<button class="chip chip-all${allActive ? ' active' : ''}" onclick="selectCinema(null)">Todos</button>` +
+    `<button class="chip chip-all${allActive ? ' active' : ''}" onclick="selectCinema(null)">All</button>` +
     chips;
 }
 
@@ -493,7 +493,7 @@ function renderByCinema() {
       </div>`;
   }
 
-  if (!html) html = '<div class="empty-state">No hay funciones subtituladas para este día.</div>';
+  if (!html) html = '<div class="empty-state">No subtitled screenings for this day.</div>';
   document.getElementById('content').innerHTML = html;
 }
 
@@ -536,7 +536,7 @@ function renderByMovie() {
       </div>`;
   }
 
-  if (!html) html = '<div class="empty-state">No hay funciones subtituladas para este día.</div>';
+  if (!html) html = '<div class="empty-state">No subtitled screenings for this day.</div>';
   document.getElementById('content').innerHTML = html;
 }
 
@@ -574,13 +574,13 @@ async function loadData() {
 
     const fetchedAt = DATA.fetched_at || '';
     document.getElementById('refreshInfo').innerHTML =
-      `Actualizado: ${fetchedAt}`;
+      `Updated: ${fetchedAt}`;
 
     render();
   } catch (e) {
     document.getElementById('content').innerHTML =
-      `<div class="error-banner">⚠ No se pudo cargar schedule.json: ${e.message}</div>`;
-    document.getElementById('refreshInfo').textContent = 'Error al cargar';
+      `<div class="error-banner">⚠ Could not load schedule: ${e.message}</div>`;
+    document.getElementById('refreshInfo').textContent = 'Error loading';
   }
 }
 
@@ -588,3 +588,4 @@ loadData();
 </script>
 </body>
 </html>
+                                      
